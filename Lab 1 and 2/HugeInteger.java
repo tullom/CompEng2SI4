@@ -68,14 +68,24 @@ public class HugeInteger {
 			temp = new int[this.data.length + 1]; //the new num can be at most one space more
 			counter = this.data.length;
 			if ((this.isNegative == true && h.isNegative == false)) { //if one is negative and one is positive
-				if(h.data[0] >= this.data[0]) {  //check which one is larger and execute larger minus smaller
+				int j = 0;
+				while(h.data[j] == this.data[j]) {
+					j++;
+					if(j>=this.data.length) {
+						hi +="0";
+						sum = new HugeInteger(hi); //create a new HugeInteger object using the string we built and return it
+						return sum;
+					}
+				}
+				if(h.data[j] > this.data[j]) {  //check which one is larger and execute larger minus smaller
 					for(int i=this.data.length-1;i>=0;i--) {
 						temp[counter] = h.data[i] - this.data[i] - carry;
 						if (temp[counter] < 0) {carry = 1; temp[counter]+=10;}
 						else {carry = 0;}
+						//System.out.println(temp[counter]);
 						counter--;
 					}
-				} else {
+				} else if (h.data[j] < this.data[j]) {
 					flag = 1;
 					for(int i=this.data.length-1;i>=0;i--) {
 						temp[counter] = this.data[i] - h.data[i] - carry;
@@ -85,7 +95,16 @@ public class HugeInteger {
 					}
 				}
 			} else if (this.isNegative == false && h.isNegative == true) { //if second one is negative and first one is positive, similar to previous function
-				if(h.data[0] >= this.data[0]) {
+				int j = 0;
+				while(h.data[j] == this.data[j]) {
+					j++;
+					if(j>=this.data.length) {
+						hi +="0";
+						sum = new HugeInteger(hi); //create a new HugeInteger object using the string we built and return it
+						return sum;
+					}
+				}
+				if(h.data[j] > this.data[j]) {
 					flag = 1;
 					for(int i=this.data.length-1;i>=0;i--) {
 						temp[counter] = h.data[i] - this.data[i] - carry;
@@ -125,52 +144,114 @@ public class HugeInteger {
 			temp = new int[this.data.length + 1];  //make an array using the length of the larger number
 			offset = this.data.length - h.data.length; //the difference in sizes
 			counter = this.data.length;
-			for(int i=h.data.length-1;i>=0;i--) {  //add the elements of both, where the larger array is shifted by offset
-				temp[counter] = this.data[i+offset]+h.data[i]+carry;
-				if (temp[counter] > 9) {carry = 1; temp[counter]-=10;}
-				else {carry = 0;}
-				counter--;
+			if ((this.isNegative == true && h.isNegative == false)) {
+				flag = 1;
+				for(int i=h.data.length-1;i>=0;i--) {  //add the elements of both, where the larger array is shifted by offset
+					temp[counter] = this.data[i+offset] - h.data[i] - carry;
+					if (temp[counter] < 0) {carry = 1; temp[counter]+=10;}
+					else {carry = 0;}
+					counter--;
+				}
+				for(int i=offset-1;i>=0;i--) { //now the numbers in the larger num can drop down
+					temp[i+1] = this.data[i]-carry;
+					if (temp[i+1] < 0) {carry = 1; temp[i+1]+=10;}
+					else {carry = 0;}
+				}
+				if(carry == 1) {temp[counter-1] = carry;}
+			} else if((this.isNegative == false && h.isNegative == true)){
+				for(int i=h.data.length-1;i>=0;i--) {  //add the elements of both, where the larger array is shifted by offset
+					temp[counter] = this.data[i+offset] - h.data[i] - carry;
+					if (temp[counter] < 0) {carry = 1; temp[counter]+=10;}
+					else {carry = 0;}
+					counter--;
+				}
+				for(int i=offset-1;i>=0;i--) { //now the numbers in the larger num can drop down
+					temp[i+1] = this.data[i]-carry;
+					if (temp[i+1] < 0) {carry = 1; temp[i+1]+=10;}
+					else {carry = 0;}
+				}
+				if(carry == 1) {temp[counter-1] = carry;}
+			} else {
+				for(int i=h.data.length-1;i>=0;i--) {  //add the elements of both, where the larger array is shifted by offset
+					temp[counter] = this.data[i+offset]+h.data[i]+carry;
+					if (temp[counter] > 9) {carry = 1; temp[counter]-=10;}
+					else {carry = 0;}
+					counter--;
+				}
+				for(int i=offset-1;i>=0;i--) { //now the numbers in the larger num can drop down
+					temp[i+1] = this.data[i]+carry;
+					if (temp[i+1] > 9) {carry = 1; temp[i+1]-=10;}
+					else {carry = 0;}
+				}
+				if(carry == 1) {temp[counter-1] = carry;}
 			}
-			for(int i=offset-1;i>=0;i--) { //now the numbers in the larger num can drop down
-				temp[i+1] = this.data[i]+carry;
-				if (temp[i+1] > 9) {carry = 1; temp[i+1]-=10;}
-				else {carry = 0;}
-			}
-			if(carry == 1) {temp[counter-1] = carry;}
+
 //			for (int i=0;i<temp.length;i++) {
 //				System.out.print(temp[i]);
 //			}
 			for(int i=0;i<temp.length;i++) {
-				if(this.isNegative == true && h.isNegative == true && i==0) {hi+="-";}
-				if(temp[i]==0 && i==0) {continue;}
-				hi += temp[i];
+				if((this.isNegative == true && h.isNegative == true && i==0)||(flag == 1 && i==0)) {hi+="-";} //add negative sign
+				if(temp[i]==0 && i==0) {continue;} //check for leading zeroes
+				hi += temp[i]; //build the string
 			}
 		}
 		else if (this.data.length < h.data.length) { //when one number has more digits then the previous, but the other way around
 			temp = new int[h.data.length + 1];
 			offset = h.data.length - this.data.length;
 			counter = h.data.length;
-			for(int i=this.data.length-1;i>=0;i--) {
-				temp[counter] = this.data[i]+h.data[i+offset]+carry;
-				if (temp[counter] > 9) {carry = 1; temp[counter]-=10;}
-				else {carry = 0;}
-				counter--;
+			if ((this.isNegative == true && h.isNegative == false)) {
+				for(int i=this.data.length-1;i>=0;i--) {
+					temp[counter] = h.data[i+offset] - this.data[i] - carry;
+					if (temp[counter] < 0) {carry = 1; temp[counter]+=10;}
+					else {carry = 0;}
+					counter--;
+				}
+				for(int i=offset-1;i>=0;i--) {
+					temp[i+1] = h.data[i]-carry;
+					if (temp[i+1] < 0) {carry = 1; temp[i+1]+=10;}
+					else {carry = 0;}
+					
+				}
+				if(carry == 1) {temp[counter-1] = carry;}
+			} else if ((this.isNegative == false && h.isNegative == true)) {
+				flag = 1;
+				for(int i=this.data.length-1;i>=0;i--) {
+					temp[counter] = h.data[i+offset] - this.data[i] - carry;
+					if (temp[counter] < 0) {carry = 1; temp[counter]+=10;}
+					else {carry = 0;}
+					counter--;
+				}
+				for(int i=offset-1;i>=0;i--) {
+					temp[i+1] = h.data[i]-carry;
+					if (temp[i+1] < 0) {carry = 1; temp[i+1]+=10;}
+					else {carry = 0;}
+					
+				}
+				if(carry == 1) {temp[counter-1] = carry;}
+			} else {
+				for(int i=this.data.length-1;i>=0;i--) {
+					temp[counter] = this.data[i]+h.data[i+offset]+carry;
+					if (temp[counter] > 9) {carry = 1; temp[counter]-=10;}
+					else {carry = 0;}
+					counter--;
+				}
+				for(int i=offset-1;i>=0;i--) {
+					temp[i+1] = h.data[i]+carry;
+					if (temp[i+1] > 9) {carry = 1; temp[i+1]-=10;}
+					else {carry = 0;}
+					
+				}
+				if(carry == 1) {temp[counter-1] = carry;}
 			}
-			for(int i=offset-1;i>=0;i--) {
-				temp[i+1] = h.data[i]+carry;
-				if (temp[i+1] > 9) {carry = 1; temp[i+1]-=10;}
-				else {carry = 0;}
-				
-			}
-			if(carry == 1) {temp[counter-1] = carry;}
+
 //			for (int i=0;i<temp.length;i++) {
 //				System.out.print(temp[i]);
 //			}
 			
 			for(int i=0;i<temp.length;i++) {
-				if(this.isNegative == true && h.isNegative == true && i==0) {hi+="-";}
-				if(temp[i]==0 && i==0) {continue;}
-				hi += temp[i];
+				if((this.isNegative == true && h.isNegative == true && i==0)||(flag == 1 && i==0)) {hi+="-";} //add negative sign
+				if(temp[i]==0 && i==0) {continue;} //check for leading zeroes
+				hi += temp[i]; //build the string
 			}
 		}
 //		System.out.println(hi);
@@ -194,8 +275,13 @@ public class HugeInteger {
 //	
 	public String toString() {
 		String hi = new String("");
+		int count = 0;
+		while(data[count] == 0) {
+			count++;
+			if(data.length<=count) {hi+= "0";return hi;}
+		}
 		if(isNegative == true) {hi+="-";}
-		for(int i=0;i<data.length;i++) {
+		for(int i=count;i<data.length;i++) {
 			hi += data[i];
 		}
 		return hi;
