@@ -7,8 +7,10 @@ public class testClass {
 		char str;
 		int bigNum = 482947929;
 		
-		HugeInteger hugeNum = new HugeInteger("3139138");
-		HugeInteger hugeNum2 = new HugeInteger("1000");
+		HugeInteger hugeNum = new HugeInteger("99");
+		HugeInteger hugeNum2 = new HugeInteger("99");
+		
+		System.out.println(hugeNum.compareTo(hugeNum2));
 		
 //		str = s.next().charAt(0);
 //		bigNum = str;s

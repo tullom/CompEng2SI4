@@ -182,8 +182,9 @@ public class HugeInteger {
 					temp[i+1] = this.data[i]+carry;
 					if (temp[i+1] > 9) {carry = 1; temp[i+1]-=10;}
 					else {carry = 0;}
+					counter--;
 				}
-				if(carry == 1) {temp[counter-1] = carry;}
+				if (carry==1) {temp[counter]=carry;}
 			}
 
 //			for (int i=0;i<temp.length;i++) {
@@ -193,7 +194,9 @@ public class HugeInteger {
 				if((this.isNegative == true && h.isNegative == true && i==0)||(flag == 1 && i==0)) {hi+="-";} //add negative sign
 				if(temp[i]==0 && i==0) {continue;} //check for leading zeroes
 				hi += temp[i]; //build the string
+//				System.out.println(temp[0]);
 			}
+//			System.out.println(hi);
 		}
 		else if (this.data.length < h.data.length) { //when one number has more digits then the previous, but the other way around
 			temp = new int[h.data.length + 1];
@@ -303,12 +306,23 @@ public class HugeInteger {
 		HugeInteger product = new HugeInteger("0");
 		HugeInteger i = new HugeInteger("0");
 		HugeInteger one = new HugeInteger("1");
-		while(i.compareTo(h) == -1) {
-			product = product.add(this);
-			i = i.add(one);
-//			System.out.println(product);
+		if(h.isNegative == false) {
+			while(i.compareTo(h) == -1) {
+				product = product.add(this);
+				i = i.add(one);
+	//			if(i.toString().equals("231")){System.out.println(product);}
+			}
+			return product;
+		} else {
+			while(i.compareTo(h) == 1) {
+				product = product.add(this);
+				i = i.subtract(one);
+	//			if(i.toString().equals("231")){System.out.println(product);}
+			}
+			if(this.isNegative == false) {product.isNegative = true;}
+			else {product.isNegative = false;}
+			return product;
 		}
-		return product;
 		
 	}
 	
