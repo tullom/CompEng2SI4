@@ -261,18 +261,71 @@ public class HugeInteger {
 	
 	//Lab 2
 	
-//	public HugeInteger subtract(HugeInteger h) {
-//		
-//	}
-//	
-//	public HugeInteger multiply(HugeInteger h) {
-//		
-//	}
-//	
-//	public int compareTo(HugeInteger h) {
-//		
-//	}
-//	
+	public HugeInteger subtract(HugeInteger h) {
+		
+		String hi = "";
+		HugeInteger difference;
+		
+		if(this.isNegative == false) {
+			if(h.isNegative == false) {
+				HugeInteger temp;
+				temp = new HugeInteger("-" + h.toString());
+				difference = this.add(temp);
+				return difference;
+			} else if(h.isNegative == true){
+				HugeInteger temp;
+				temp = new HugeInteger(h.toString());
+				temp.isNegative = false;
+				difference = this.add(temp);
+				return difference;				
+			}
+		} else if(this.isNegative == true){
+			if (h.isNegative == false) {
+				HugeInteger temp;
+				temp = new HugeInteger("-" + h.toString());
+				difference = this.add(temp);
+				return difference;
+			} else if(h.isNegative == true){
+				HugeInteger temp;
+				temp = new HugeInteger(h.toString());
+				temp.isNegative = false;
+				difference = this.add(temp);
+				return difference;		
+			}
+		}
+		
+		difference = new HugeInteger("0");
+		return difference;
+		
+	}
+	
+	public HugeInteger multiply(HugeInteger h) {
+		HugeInteger product = new HugeInteger("0");
+		HugeInteger i = new HugeInteger("0");
+		HugeInteger one = new HugeInteger("1");
+		while(i.compareTo(h) == -1) {
+			product = product.add(this);
+			i = i.add(one);
+//			System.out.println(product);
+		}
+		return product;
+		
+	}
+	
+	public int compareTo(HugeInteger h) {
+		HugeInteger temp = this.subtract(h);
+//		System.out.println(temp.toString());
+		if (temp.toString().equals("0")) {
+			return 0;
+		} else if(temp.isNegative == false) {
+			return 1;
+		}
+		else if(temp.isNegative == true) {
+			return -1;
+		}
+		return 0;
+	}
+	
 	public String toString() {
 		String hi = new String("");
 		int count = 0;
